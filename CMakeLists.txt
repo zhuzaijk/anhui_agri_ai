@@ -17,6 +17,7 @@ add_compile_options(-Wall -Wextra -Werror -O3)
 # 查找依赖库
 find_package(Drogon REQUIRED)
 find_package(PkgConfig REQUIRED)
+find_package(OpenSSL REQUIRED)
 pkg_check_modules(JSONCPP REQUIRED jsoncpp)
 
 # 头文件目录
@@ -39,4 +40,6 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
     Drogon::Drogon
     ${JSONCPP_LIBRARIES}
+    OpenSSL::SSL
+    OpenSSL::Crypto
 )

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安农AI · 桌面端设计</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background: #eaf5ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 桌面主容器 */
+        .desktop {
+            width: 1300px;
+            max-width: 100%;
+            height: 800px;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 40, 0, 0.35);
+            display: flex;
+            overflow: hidden;
+            border: 1px solid #d0e0d0;
+        }
+
+        /* ========== 左侧边栏 ========== */
+        .sidebar {
+            width: 280px;
+            background: #f8fff8;
+            border-right: 1px solid #cde0cd;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+        }
+
+        .sidebar-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e5a2e;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar-logo span {
+            background: #2E7D32;
+            color: white;
+            font-size: 14px;
+            padding: 2px 10px;
+            border-radius: 30px;
+            margin-left: 8px;
+        }
+
+        .new-chat-btn {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            padding: 14px 0;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+            transition: 0.2s;
+            box-shadow: 0 4px 8px rgba(46,125,50,0.2);
+        }
+
+        .new-chat-btn:hover {
+            background: #1e5a2e;
+        }
+
+        .history-title {
+            font-size: 14px;
+            color: #5f7a5f;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .history-item {
+            padding: 12px 16px;
+            background: white;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 1px solid transparent;
+            box-shadow: 0 2px 6px rgba(0,30,0,0.03);
+        }
+
+        .history-item:hover {
+            background: #eaf5ea;
+            border-color: #bcd8bc;
+        }
+
+        .history-item .title {
+            font-weight: 500;
+            color: #1a3b1a;
+            margin-bottom: 4px;
+        }
+
+        .history-item .time {
+            font-size: 11px;
+            color: #7a927a;
+        }
+
+        /* ========== 中间主区域 ========== */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f9fff9;
+            min-width: 600px;
+        }
+
+        .main-header {
+            padding: 24px 30px 12px;
+            border-bottom: 1px solid #e0f0e0;
+        }
+
+        .main-header h2 {
+            font-size: 22px;
+            color: #1e4a1e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-header h2 small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #5a7a5a;
+            margin-left: 12px;
+        }
+
+        .campus-tip {
+            background: #e0f0e0;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 13px;
+            color: #1e5a2e;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        /* 三个场景卡片 */
+        .cards {
+            display: flex;
+            gap: 16px;
+            padding: 24px 30px 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 18px 0;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 6px 14px rgba(46,125,50,0.08);
+            border: 1px solid #d8ecd8;
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(46,125,50,0.12);
+            border-color: #9bc99b;
+        }
+
+        .card .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .card span {
+            font-size: 15px;
+            font-weight: 500;
+            color: #2E7D32;
+        }
+
+        /* 聊天区域 */
+        .chat-area {
+            flex: 1;
+            padding: 10px 30px 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .bubble-left, .bubble-right {
+            max-width: 70%;
+            padding: 14px 18px;
+            border-radius: 24px;
+            line-height: 1.5;
+            font-size: 15px;
+            word-break: break-word;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .bubble-left {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #d0e0d0;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .bubble-right {
+            align-self: flex-end;
+            background: #2E7D32;
+            color: white;
+            border-bottom-right-radius: 6px;
+        }
+
+        .emotion-icon {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        /* 输入区域 */
+        .input-area {
+            padding: 20px 30px 24px;
+            background: white;
+            border-top: 1px solid #e0f0e0;
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 16px 22px;
+            border: 1px solid #c0d8c0;
+            border-radius: 40px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+            background: #f8fff8;
+        }
+
+        .input-area input:focus {
+            border-color: #2E7D32;
+            box-shadow: 0 0 0 3px rgba(46,125,50,0.2);
+        }
+
+        .input-area button {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-area button:hover {
+            background: #1e5a2e;
+            transform: scale(1.05);
+        }
+
+        /* ========== 右侧情绪面板 ========== */
+        .emotion-panel {
+            width: 280px;
+            background: #f8fff8;
+            border-left: 1px solid #cde0cd;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e4a1e;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .current-emotion {
+            background: white;
+            border-radius: 28px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #d0e8d0;
+            box-shadow: 0 6px 12px rgba(0,30,0,0.03);
+        }
+
+        .emotion-big-icon {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+
+        .emotion-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e4a1e;
+        }
+
+        .emotion-desc {
+            font-size: 13px;
+            color: #5a7a5a;
+            margin-top: 6px;
+        }
+
+        .emotion-stats {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .stat-item {
+            font-size: 13px;
+            background: #eaf5ea;
+            padding: 4px 10px;
+            border-radius: 30px;
+        }
+
+        .emotion-history {
+            background: white;
+            border-radius: 20px;
+            padding: 16px;
+            border: 1px solid #d0e8d0;
+        }
+
+        .history-graph {
+            display: flex;
+            align-items: flex-end;
+            height: 60px;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .graph-bar {
+            flex: 1;
+            background: #2E7D32;
+            height: calc(100% * var(--h));
+            min-height: 8px;
+            border-radius: 8px 8px 4px 4px;
+            opacity: 0.7;
+        }
+
+        .graph-bar:nth-child(1) { --h: 0.8; }
+        .graph-bar:nth-child(2) { --h: 0.3; }
+        .graph-bar:nth-child(3) { --h: 0.5; }
+        .graph-bar:nth-child(4) { --h: 0.9; }
+        .graph-bar:nth-child(5) { --h: 0.4; }
+
+        .emojis-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .emoji-item {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 0;
+            text-align: center;
+            border: 1px solid #d0e8d0;
+            font-size: 28px;
+            transition: 0.2s;
+        }
+
+        .emoji-item:hover {
+            background: #e0f0e0;
+            transform: scale(1.05);
+        }
+
+        .footer-note {
+            margin-top: auto;
+            font-size: 12px;
+            color: #7a9a7a;
+            text-align: center;
+            background: #e0f0e0;
+            padding: 8px;
+            border-radius: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <!-- 左侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-logo">
+                🌾 安农AI <span>朱文杰</span>
+            </div>
+            <button class="new-chat-btn" id="newChatBtn">
+                ➕ 新建对话
+            </button>
+            <div class="history-title">📋 历史记录</div>
+            <div class="history-list" id="historyList">
+                <div class="history-item" data-id="1">
+                    <div class="title">📚 图书馆开放时间</div>
+                    <div class="time">今天 14:30</div>
+                </div>
+                <div class="history-item" data-id="2">
+                    <div class="title">🌽 水稻种植问题</div>
+                    <div class="time">昨天 09:15</div>
+                </div>
+                <div class="history-item" data-id="3">
+                    <div class="title">💳 校园卡挂失</div>
+                    <div class="time">2月28日</div>
+                </div>
+                <div class="history-item" data-id="4">
+                    <div class="title">😊 情绪识别测试</div>
+                    <div class="time">2月27日</div>
+                </div>
+                <div class="history-item" data-id="5">
+                    <div class="title">🌾 小麦施肥</div>
+                    <div class="time">2月25日</div>
+                </div>
+                <div class="history-item" data-id="6">
+                    <div class="title">🏫 教务通知查询</div>
+                    <div class="time">2月23日</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 中间主区域 -->
+        <div class="main">
+            <div class="main-header">
+                <h2>
+                    安农AI · 校园助手
+                    <small>朱文杰同学，下午好</small>
+                </h2>
+                <div class="campus-tip">
+                    📢 今日图书馆开放至22:00 | 四六级报名截止3月15日
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="icon">📚</div>
+                    <span>校园信息</span>
+                </div>
+                <div class="card">
+                    <div class="icon">🌽</div>
+                    <span>农业咨询</span>
+                </div>
+                <div class="card">
+                    <div class="icon">💬</div>
+                    <span>日常聊天</span>
+                </div>
+            </div>
+
+            <div class="chat-area" id="chatArea">
+                <!-- 默认对话内容 -->
+                <div class="bubble-right">图书馆今天几点关门？</div>
+                <div class="bubble-left">
+                    <span>今天图书馆22:00闭馆，记得带校园卡哦</span>
+                    <span class="emotion-icon">😊</span>
+                </div>
+                <div class="bubble-right">水稻什么时候播种？</div>
+                <div class="bubble-left">
+                    <span>安徽地区一季稻通常在4月中下旬播种🌱</span>
+                    <span class="emotion-icon">🌾</span>
+                </div>
+                <div class="bubble-left" style="background:#f0f7f0">
+                    <span>识别到你的疑问，需要更详细资料吗？</span>
+                    <span class="emotion-icon">🤔</span>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" placeholder="输入你的问题..." id="messageInput">
+                <button id="sendBtn">➤</button>
+            </div>
+        </div>
+
+        <!-- 右侧情绪面板 -->
+        <div class="emotion-panel">
+            <div class="panel-title">🧠 实时情绪识别</div>
+            <div class="current-emotion" id="currentEmotionBox">
+                <div class="emotion-big-icon" id="emotionBigIcon">😊</div>
+                <div class="emotion-name" id="emotionName">开心</div>
+                <div class="emotion-desc" id="emotionDesc">识别到积极的情绪</div>
+                <div class="emotion-stats">
+                    <span class="stat-item">开心 78%</span>
+                    <span class="stat-item">中性 15%</span>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel-title">📊 情绪趋势</div>
+                <div class="emotion-history">
+                    <div class="history-graph">
+                        <div class="graph-bar"></div>
+                        <div class="graph-bar"></div>
+                        <div class="graph-bar"></div>
+                        <div class="graph-bar"></div>
+                        <div class="graph-bar"></div>
+                    </div>
+                    <div style="font-size:12px; color:#5a7a5a; text-align:center;">最近5轮对话</div>
+                </div>
+            </div>
+
+            <div>
+                <div class="panel-title">🎭 校园专属表情</div>
+                <div class="emojis-grid">
+                    <div class="emoji-item">😊</div>
+                    <div class="emoji-item">🌾</div>
+                    <div class="emoji-item">🤔</div>
+                    <div class="emoji-item">📚</div>
+                    <div class="emoji-item">💡</div>
+                    <div class="emoji-item">🐮</div>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                情绪识别 · 专属表情已集成
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 获取元素
+            const chatArea = document.getElementById('chatArea');
+            const messageInput = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const newChatBtn = document.getElementById('newChatBtn');
+            const historyItems = document.querySelectorAll('.history-item');
+            const emotionBigIcon = document.getElementById('emotionBigIcon');
+            const emotionName = document.getElementById('emotionName');
+            const emotionDesc = document.getElementById('emotionDesc');
+
+            // 情绪映射（简单示例）
+            const emotions = [
+                { icon: '😊', name: '开心', desc: '积极的情绪', keywords: ['开心', '高兴', '谢谢', '好'] },
+                { icon: '🤔', name: '疑问', desc: '有点困惑', keywords: ['什么', '怎么', '吗', '?', '？'] },
+                { icon: '🌾', name: '解答', desc: '提供农业知识', keywords: ['水稻', '小麦', '播种', '施肥'] },
+                { icon: '😐', name: '中性', desc: '平静状态', keywords: [] }
+            ];
+
+            // 根据文本简单判断情绪
+            function detectEmotion(text) {
+                text = text.toLowerCase();
+                for (let e of emotions) {
+                    if (e.keywords.some(k => text.includes(k))) {
+                        return e;
+                    }
+                }
+                return emotions[3]; // 默认中性
+            }
+
+            // 更新右侧面板
+            function updateEmotionPanel(emotion) {
+                emotionBigIcon.textContent = emotion.icon;
+                emotionName.textContent = emotion.name;
+                emotionDesc.textContent = emotion.desc;
+            }
+
+            // 添加消息到聊天区，并更新情绪
+            function addMessage(text, isUser = true) {
+                const bubble = document.createElement('div');
+                bubble.className = isUser ? 'bubble-right' : 'bubble-left';
+                bubble.innerHTML = isUser ? text : `<span>${text}</span><span class="emotion-icon">${detectEmotion(text).icon}</span>`;
+                chatArea.appendChild(bubble);
+                chatArea.scrollTop = chatArea.scrollHeight;
+
+                // 如果是AI消息，更新右侧情绪面板
+                if (!isUser) {
+                    const emo = detectEmotion(text);
+                    updateEmotionPanel(emo);
+                }
+            }
+
+            // 发送消息
+            function sendMessage() {
+                const msg = messageInput.value.trim();
+                if (msg === '') return;
+                // 用户消息
+                addMessage(msg, true);
+                messageInput.value = '';
+
+                // 模拟AI回复（延迟一点更像真实）
+                setTimeout(() => {
+                    let reply = '';
+                    const lowerMsg = msg.toLowerCase();
+                    if (lowerMsg.includes('图书馆')) {
+                        reply = '图书馆今天22:00闭馆，明天8:00开门';
+                    } else if (lowerMsg.includes('水稻') || lowerMsg.includes('播种')) {
+                        reply = '安徽地区一季稻通常在4月中下旬播种，建议选择优质品种';
+                    } else if (lowerMsg.includes('校园卡')) {
+                        reply = '校园卡丢失请速到师生服务大厅挂失，或在线自助挂失';
+                    } else if (lowerMsg.includes('开心') || lowerMsg.includes('高兴')) {
+                        reply = '开心就好！送你一个专属表情😊';
+                    } else {
+                        reply = '收到你的消息，正在处理中... 如需帮助请详细描述。';
+                    }
+                    addMessage(reply, false);
+                }, 500);
+            }
+
+            // 新建对话：清空聊天区并添加欢迎语
+            newChatBtn.addEventListener('click', function() {
+                chatArea.innerHTML = `
+                    <div class="bubble-left">
+                        <span>你好！我是安农AI助手，有什么可以帮你的吗？</span>
+                        <span class="emotion-icon">😊</span>
+                    </div>
+                `;
+                updateEmotionPanel(emotions[0]); // 默认开心
+            });
+
+            // 历史记录点击
+            historyItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    // 模拟不同历史对话
+                    if (id === '1') {
+                        chatArea.innerHTML = `
+                            <div class="bubble-right">图书馆今天几点关门？</div>
+                            <div class="bubble-left"><span>今天图书馆22:00闭馆，记得带校园卡哦</span><span class="emotion-icon">😊</span></div>
+                        `;
+                        updateEmotionPanel(emotions[0]);
+                    } else if (id === '2') {
+                        chatArea.innerHTML = `
+                            <div class="bubble-right">水稻什么时候播种？</div>
+                            <div class="bubble-left"><span>安徽地区一季稻通常在4月中下旬播种🌱</span><span class="emotion-icon">🌾</span></div>
+                            <div class="bubble-right">需要施肥建议吗？</div>
+                            <div class="bubble-left"><span>基肥建议每亩施用复合肥30公斤</span><span class="emotion-icon">🌾</span></div>
+                        `;
+                        updateEmotionPanel(emotions[2]);
+                    } else if (id === '3') {
+                        chatArea.innerHTML = `
+                            <div class="bubble-right">校园卡丢了怎么办？</div>
+                            <div class="bubble-left"><span>请尽快到师生服务大厅挂失，或登录教务处网站自助挂失</span><span class="emotion-icon">⚠️</span></div>
+                            <div class="bubble-left"><span>补办需携带身份证和学生证，20元工本费</span><span class="emotion-icon">💳</span></div>
+                        `;
+                        updateEmotionPanel(emotions[3]); // 中性
+                    } else if (id === '4') {
+                        chatArea.innerHTML = `
+                            <div class="bubble-right">我今天很开心！</div>
+                            <div class="bubble-left"><span>识别到你的开心情绪，送你一个专属表情😄</span><span class="emotion-icon">😄</span></div>
+                            <div class="bubble-right">有什么开心的事吗？</div>
+                            <div class="bubble-left"><span>和你聊天就很开心呀！</span><span class="emotion-icon">😊</span></div>
+                        `;
+                        updateEmotionPanel(emotions[0]);
+                    } else if (id === '5') {
+                        chatArea.innerHTML = `
+                            <div class="bubble-right">小麦什么时候施肥？</div>
+                            <div class="bubble-left"><span>返青期追施尿素，拔节期看苗情追肥</span><span class="emotion-icon">🌾</span></div>
+                            <div class="bubble-left"><span>更多小麦种植资料需要发你吗？</span><span class="emotion-icon">📚</span></div>
+                        `;
+                        updateEmotionPanel(emotions[2]);
+                    } else {
+                        chatArea.innerHTML = `
+                            <div class="bubble-right">教务通知有哪些？</div>
+                            <div class="bubble-left"><span>四六级报名截止3月15日，补考安排请关注官网</span><span class="emotion-icon">📢</span></div>
+                        `;
+                        updateEmotionPanel(emotions[3]);
+                    }
+                });
+            });
+
+            // 发送按钮事件
+            sendBtn.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            // 初始化情绪面板（根据当前最后一条消息）
+            const lastBubble = chatArea.querySelector('.bubble-left:last-child span:first-child');
+            if (lastBubble) {
+                const lastText = lastBubble.textContent;
+                const emo = detectEmotion(lastText);
+                updateEmotionPanel(emo);
+            } else {
+                updateEmotionPanel(emotions[0]); // 默认
+            }
+
+            // 卡片快速填充（可选）
+            document.querySelectorAll('.card').forEach((card, index) => {
+                card.addEventListener('click', () => {
+                    if (index === 0) messageInput.value = '图书馆开放时间？';
+                    else if (index === 1) messageInput.value = '水稻种植技术';
+                    else if (index === 2) messageInput.value = '今天心情怎么样';
+                    // 不自动发送，只填充输入框
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
