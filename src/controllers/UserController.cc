@@ -1,5 +1,8 @@
 #include "controllers/UserController.h"
 #include "services/UserService.h"
+#include "utils/RedisUtil.hpp"
+#include "json/json.h"
+#include <jwt-cpp/jwt.h>
 
 namespace controllers {
 
@@ -77,4 +80,46 @@ void UserController::loginUser(const HttpRequestPtr& req,
     callback(resp);
 }
 
+void UserController::getUserInfo(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback)
+{
+    auto jsonOpt = req->getJsonObject();
+    Json::Value resqJson;
+    resqJson["code"] = "200";
+    resqJson["msg"] = "您的token有效！";
+    resqJson["data"] = "";
+    auto resq = HttpResponse::newHttpJsonResponse(resqJson);
+    callback(resq);
+}
+
+void UserController::logoutUser(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback)
+{
+    (void)req;
+    Json::Value respJson;
+    try
+    {   //从请求头获取Token
+        auto authHeader = req->getHeader("Authorization");
+        const std::string BEARER_PREFIX = "Bearer ";
+        std::string token = authHeader.substr(BEARER_PREFIX.size());
+
+        //获取key，并删除
+        auto decoded = jwt::decode(token);
+        std::string userId = decoded.get_payload_claim("user_id").as_string();
+        std::string redisKey = "jwt:user_id:" + userId;
+        auto& redis = ::utils::RedisUtil::getInstance();
+        redis.deleteToken(redisKey);
+
+        respJson["code"] = 200;
+        respJson["msg"] = "注销成功！";
+        respJson["data"] = "";
+    }
+    catch (const std::exception& e)
+    {
+        respJson["code"] = 400;
+        respJson["msg"] = "注销失败：" + std::string(e.what());
+        respJson["data"] = "";
+    }
+
+    auto resp = HttpResponse::newHttpJsonResponse(respJson);
+    callback(resp);
+}
 } // namespace controllers

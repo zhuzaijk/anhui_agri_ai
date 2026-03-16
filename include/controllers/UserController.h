@@ -15,6 +15,10 @@ class UserController : public drogon::HttpController<UserController>
                       std::function<void (const HttpResponsePtr &)> &&callback);
     void loginUser(const HttpRequestPtr& req,
                       std::function<void (const HttpResponsePtr &)> &&callback);
+    void logoutUser(const HttpRequestPtr& req,
+                      std::function<void (const HttpResponsePtr &)> &&callback);
+    void getUserInfo(const HttpRequestPtr& req,
+                      std::function<void (const HttpResponsePtr &)> &&callback);
     METHOD_LIST_BEGIN
     // use METHOD_ADD to add your custom processing function here;
     // METHOD_ADD(UserController::get, "/{2}/{1}", Get); // path is /controllers/UserController/{arg2}/{arg1}
@@ -22,6 +26,8 @@ class UserController : public drogon::HttpController<UserController>
     // ADD_METHOD_TO(UserController::your_method_name, "/absolute/path/{1}/{2}/list", Get); // path is /absolute/path/{arg1}/{arg2}/list
     ADD_METHOD_TO(UserController::registerUser, "/api/user/register", Post);
     ADD_METHOD_TO(UserController::loginUser, "/api/user/login", Post);
+    ADD_METHOD_TO(UserController::getUserInfo, "/api/user/info", Get, "filters::AuthFilter");
+    ADD_METHOD_TO(UserController::logoutUser, "/api/user/logout", Post, "filters::AuthFilter");
     METHOD_LIST_END
     // your declaration of processing function maybe like this:
     // void get(const HttpRequestPtr& req, std::function<void (const HttpResponsePtr &)> &&callback, int p1, std::string p2);

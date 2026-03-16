@@ -18,6 +18,7 @@ add_compile_options(-Wall -Wextra -Werror -O3)
 find_package(Drogon REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(jwt-cpp REQUIRED)
 pkg_check_modules(JSONCPP REQUIRED jsoncpp)
 
 # 头文件目录
@@ -42,4 +43,6 @@ target_link_libraries(${PROJECT_NAME}
     ${JSONCPP_LIBRARIES}
     OpenSSL::SSL
     OpenSSL::Crypto
+    jwt-cpp::jwt-cpp
+    hiredis
 )

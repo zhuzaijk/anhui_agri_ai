@@ -1,4 +1,5 @@
 #include "repositories/UserRepository.h"
+#include <string>
 
 namespace repositories
 {
@@ -9,15 +10,18 @@ namespace repositories
             daos::UserDao newUser;
             newUser.username = username;
             newUser.password = hashed_pasword;
+            std::cout << newUser.username << newUser.password << std::endl;
 
             if (newUser.save())
             {
-                return std::nullopt;
+                std::cout << "保存成功，用户ID：" << newUser.id << std::endl;
+                return newUser.id;
             }
-            return newUser.id;
+            return std::nullopt;
         }
         catch(const drogon::orm::DrogonDbException& e)
         {
+            std::cout << username << hashed_pasword;
             return std::nullopt;
         }
     }
