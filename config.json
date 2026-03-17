@@ -31,6 +31,9 @@
       "jwt": {
         "secret_key": "skajxkriflvmboqpahsgzyxbcnvjfyes",
         "expire_hours": 2
+      },
+      "ragflow": {
+        "apikey": "ragflow-Q2ZTliMmZjMjBmZTExZjE4N2ZhNDZlOW"
       }
   }
 }

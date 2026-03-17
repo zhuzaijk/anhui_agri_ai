@@ -30,3 +30,22 @@ int main() {
     
     return 0;
 }
+
+// #include <iostream>
+// #include <drogon/drogon.h>
+// #include <json/json.h>
+// #include <string>
+// #include "utils/ConfigReader.hpp"
+
+// int main() {
+//     drogon::app().loadConfigFile("../config.json");//以运行路径为基准，（在build运行的）
+//     Json::Value custiom_config = drogon::app().getCustomConfig();
+//     auto CustomConfig = utils::ConfigReader::getInstance().getConfig("ragflow");
+
+//     Json::Value ragflowConfig = (*CustomConfig);
+
+//     // std::string apiKey = ragflowConfig["ragflow"]["apikey"].asString();
+
+//     std::cout << ragflowConfig["apikey"].asString() << std::endl;
+//     return 0;
+// }

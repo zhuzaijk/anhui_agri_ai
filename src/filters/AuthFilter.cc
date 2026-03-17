@@ -82,6 +82,7 @@ try {
     //检查redis白名单
     std::string userId = decoded.get_payload_claim("user_id").as_string();
     std::string redisKey = "jwt:user_id:" + userId;
+    std::cout << "dasdasdasdassdas: " << userId << std::endl;
 
     auto& redis = ::utils::RedisUtil::getInstance();
     auto redisToken = redis.getToken(redisKey);
@@ -89,8 +90,7 @@ try {
     if (!redisToken || *redisToken != token) {
         throw std::runtime_error("Token已被撤销或无效");
     }
-
-    // Token有效，放行
+    req->attributes()->insert("userId",  userId);  // 将用户ID放入请求属性，供后续处理使用
     fccb();
 
 } catch (const std::exception& e) {

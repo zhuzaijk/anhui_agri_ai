@@ -1,5 +1,7 @@
 #include "controllers/ChatController.h"
 #include "services/RAGFlowService.h"
+#include "services/ChatService.h"
+#include <drogon/drogon.h>
 
 namespace controllers
 {
@@ -7,7 +9,9 @@ namespace controllers
 
     void ChatController::ask(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
     {
-        Json::Value respJson;  
+        Json::Value respJson;
+        respJson["code"] = 0;
+        respJson["msg"] = "success";
         auto reqJson = req->getJsonObject();
         if (!reqJson)
         {
@@ -17,14 +21,18 @@ namespace controllers
             respJson["data"] = "";
             auto resp = drogon::HttpResponse::newHttpJsonResponse(respJson);
             callback(resp);
+            return;
         }
 
-        //校验参数，要改成session_id和其他参数
-        std::string question = (*reqJson)["question"].asString();
-        std::string chat_id = (*reqJson)["chat_id"].asString();
-        std::string session_id = (*reqJson)["session_id"].asString();
+        // 校验参数，要改成session_id和其他参数
+        dto::ChatAskRequest chatReq;
+        chatReq.question = (*reqJson)["question"].asString();
+        chatReq.chat_id = (*reqJson)["chat_id"].asString();
+        chatReq.session_id = (*reqJson)["session_id"].asString();
+        int userId = 0;
+        userId = std::stoi(req->attributes()->get<std::string>("userId"));//一定要先转string！！
 
-        if (question.empty() || chat_id.empty() || session_id.empty())
+        if (chatReq.question.empty() || chatReq.chat_id.empty() || chatReq.session_id.empty())
         {
             LOG_ERROR << "请求参数缺失！";
             respJson["code"] = 400;
@@ -32,32 +40,58 @@ namespace controllers
             respJson["data"] = "";
             auto resp = drogon::HttpResponse::newHttpJsonResponse(respJson);
             callback(resp);
-            return; 
+            return;
         }
 
-        services::RAGFlowService::instance().askQuestion(question, chat_id, session_id,
-            [callback](bool success, const std::string& answer, const std::string& errMsg)
+        auto answerOpt = services::ChatService::instance().ask(userId, chatReq);
+        if (!answerOpt)
         {
-            Json::Value respJson;
-            if (success)
+            respJson["code"] = 2;
+            respJson["msg"] = "获取 AI 回复失败";
+            callback(drogon::HttpResponse::newHttpJsonResponse(respJson));
+            return;
+        }
+        respJson["data"] = *answerOpt;
+        auto resp = drogon::HttpResponse::newHttpJsonResponse(respJson);
+        callback(resp);
+    };
+
+    void ChatController::getHistory(const HttpRequestPtr &req, std::function<void(const HttpResponsePtr &)> &&callback)
+    {
+        Json::Value respJson;
+        respJson["code"] = 0;
+        respJson["msg"] = "sucess";
+
+        try
+        {
+            int userId = req->attributes()->get<int>("userId");
+            std::string sessionId = req->getParameter("session_id");
+            if (sessionId.empty())
             {
-                respJson["code"] = 200;
-                respJson["msg"] = "成功获取AI回复！";
-                respJson["data"] = answer;
+                respJson["code"] = 1;
+                respJson["msg"] = "缺少 session_id 参数";
+                callback(drogon::HttpResponse::newHttpJsonResponse(respJson));
             }
-            else
+            auto historyResp = services::ChatService::instance().getHistory(userId, sessionId);
+
+            respJson["data"] = Json::Value(Json::arrayValue);
+            for (const auto &item : historyResp.data)
             {
-                respJson["code"] = 500;
-                respJson["msg"] = "获取AI回复失败：" + errMsg;
-                respJson["data"] = "";
+                Json::Value itemJson;
+                itemJson["question"] = item.question;
+                itemJson["answer"] = item.answer;
+                itemJson["created_at"] = item.createdAt;
+                respJson["data"].append(itemJson);
             }
-            auto resp = drogon::HttpResponse::newHttpJsonResponse(respJson);
-            callback(resp);
-        });
+        }
+        catch (const std::exception &e)
+        {
+            respJson["code"] = 500;
+            respJson["msg"] = "服务器内部错误：" + std::string(e.what());
+            respJson["data"] = "";
+            LOG_ERROR << e.what() << '\n';
+        }
+
+        callback(drogon::HttpResponse::newHttpJsonResponse(respJson));
     }
 }
-
-
-
-
-
